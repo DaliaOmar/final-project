@@ -1,14 +1,27 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, deprecated_member_use, file_names, implementation_imports, camel_case_types
+// ignore_for_file: file_names, camel_case_types, implementation_imports, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_final_fields, non_constant_identifier_names, deprecated_member_use, avoid_print, unused_import, unnecessary_import, unnecessary_null_comparison
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:waste_collector/constants.dart';
+import 'package:flutter/src/painting/box_border.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:waste_collector/models/fetchData.dart';
+import 'package:http/http.dart' as http;
+import '../constants.dart';
+import '../main.dart';
+import '../models/officerModel.dart';
 
-class officer extends StatelessWidget {
+class officer extends StatefulWidget {
   const officer({Key? key}) : super(key: key);
 
   static const String _title = 'قائمة الموظفين';
 
+  @override
+  State<officer> createState() => _officerState();
+}
+
+class _officerState extends State<officer> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,12 +33,12 @@ class officer extends StatelessWidget {
       ],
       supportedLocales: [Locale("ar", "AE")],
       locale: Locale("ar", "AE"),
-      title: _title,
+      title: officer._title,
       home: Scaffold(
         appBar: AppBar(
           title: const Center(
               child: Text(
-            _title,
+            officer._title,
             style: TextStyle(
               fontFamily: 'El Messiri',
               fontSize: 30,
@@ -61,6 +74,21 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  fetchData _fetchData = fetchData();
+  late TextEditingController nameController;
+  late TextEditingController identityController;
+  late TextEditingController phoneController;
+  late TextEditingController passController;
+  @override
+  void initState() {
+    nameController = TextEditingController();
+    identityController = TextEditingController();
+    phoneController = TextEditingController();
+    passController = TextEditingController();
+    _fetchData.fetchAllOfficers();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,282 +100,275 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           SizedBox(
             height: 20,
           ),
-          Padding(
-              padding: EdgeInsets.all(6),
-              child: FlatButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => DraggableScrollableSheet(
-                      initialChildSize: 0.64,
-                      minChildSize: 0.2,
-                      maxChildSize: 1,
-                      builder: (context, scrollController) {
-                        return Container(
-                            decoration: BoxDecoration(
-                                color: greenDark,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20))),
-                            child: Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15))),
-                                  child: Stack(
-                                    children: [
-                                      Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              30, 40, 30, 0),
-                                          child: Row(children: <Widget>[
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.35,
-                                              child: TextField(
-                                                  cursorColor: Colors.black,
-                                                  obscureText: true,
-                                                  textAlign: TextAlign.right,
-                                                  decoration: ThemeHelper()
-                                                      .textInputDecoration(
-                                                          Icons.perm_identity,
-                                                          "الإسم",
-                                                          "أدخل الإسم الرباعي الخاص بك ..")),
-                                            ),
-                                          ])),
-                                      Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              30, 100, 30, 0),
-                                          child: Row(children: <Widget>[
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.35,
-                                              child: TextField(
-                                                  cursorColor: Colors.black,
-                                                  obscureText: true,
-                                                  textAlign: TextAlign.right,
-                                                  decoration: ThemeHelper()
-                                                      .textInputDecoration(
-                                                          Icons.phone_android,
-                                                          "رقم الهاتف",
-                                                          "أدخل رقم الهاتف الخاص بك ..")),
-                                            )
-                                          ])),
-                                      Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              30, 160, 30, 0),
-                                          child: Row(children: <Widget>[
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.35,
-                                              child: TextField(
-                                                  cursorColor: Colors.black,
-                                                  obscureText: true,
-                                                  textAlign: TextAlign.right,
-                                                  decoration: ThemeHelper()
-                                                      .textInputDecoration(
-                                                          Icons.perm_identity,
-                                                          "رقم الهوية",
-                                                          "أدخل رقم الهوية الخاص بك ..")),
-                                            )
-                                          ])),
-                                      Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              30, 220, 30, 0),
-                                          child: Row(children: <Widget>[
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.35,
-                                              child: TextField(
-                                                  cursorColor: Colors.black,
-                                                  obscureText: true,
-                                                  textAlign: TextAlign.right,
-                                                  decoration: InputDecoration(
-                                                      labelText: 'كلمة المرور',
-                                                      hintText:
-                                                          'أدخل كلمة المرور الخاصة بك ..',
-                                                      suffixIcon: Icon(
-                                                        Icons.remove_red_eye,
-                                                        color: Colors.black,
-                                                      ),
-                                                      prefixIcon: Icon(
-                                                        Icons.lock,
-                                                        color: Colors.black,
-                                                      ),
-                                                      fillColor: Colors.white,
-                                                      filled: true,
-                                                      labelStyle: TextStyle(
-                                                        fontFamily:
-                                                            'El Messiri',
-                                                        fontSize: 20,
-                                                        color: Colors.black,
-                                                      ),
-                                                      contentPadding:
-                                                          EdgeInsets.fromLTRB(
-                                                              20, 10, 20, 10),
-                                                      focusedBorder: OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  10),
-                                                          borderSide: BorderSide(
-                                                              color: Colors
-                                                                  .black)),
-                                                      enabledBorder: OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  10),
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .black)),
-                                                      errorBorder: OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(10),
-                                                          borderSide: BorderSide(color: Colors.red, width: 2.0)),
-                                                      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.red, width: 2.0)))),
-                                            )
-                                          ])),
-                                      Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              55, 290, 55, 0),
-                                          child: Row(children: <Widget>[
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.7,
-                                              child: FlatButton(
-                                                  onPressed: () {},
-                                                  textColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15)),
-                                                  child: Container(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
-                                                      height: 50,
-                                                      decoration: BoxDecoration(
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .centerRight,
-                                                            end: Alignment
-                                                                .centerLeft,
-                                                            colors: [
-                                                              greenLight,
-                                                              greenDark,
-                                                            ],
-                                                          ),
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          15))),
-                                                      child: Center(
-                                                        child: Text(
-                                                          'تعديل المعلومات',
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                'El Messiri',
-                                                            fontSize: 18,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ))),
-                                            )
-                                          ])),
-                                      Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              55, 350, 55, 0),
-                                          child: Row(children: <Widget>[
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1.7,
-                                              child: FlatButton(
-                                                  onPressed: () {},
-                                                  textColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15)),
-                                                  child: Container(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
-                                                      height: 50,
-                                                      decoration: BoxDecoration(
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .centerRight,
-                                                            end: Alignment
-                                                                .centerLeft,
-                                                            colors: [
-                                                              greenLight,
-                                                              greenDark,
-                                                            ],
-                                                          ),
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          15))),
-                                                      child: Center(
-                                                        child: Text(
-                                                          'حذف الموظف',
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                'El Messiri',
-                                                            fontSize: 18,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ))),
-                                            )
-                                          ])),
-                                    ],
-                                  )),
-                            ));
-                      },
-                    ),
-                  );
-                },
-                child: Container(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: greenDark, width: 2)),
-                    child: Center(
-                      child: Text(
-                        'رؤى جمال برق',
-                        style: TextStyle(
-                          fontFamily: 'El Messiri',
-                          fontSize: 22,
-                          color: Colors.black,
-                        ),
-                      ),
-                    )),
-              )),
+          fetchAllOfficers(),
         ],
       )),
     );
+  }
+
+  Widget officerCard(String name, String id, String Identity, String phone) {
+    return Padding(
+        padding: EdgeInsets.all(6),
+        child: FlatButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => DraggableScrollableSheet(
+                initialChildSize: 0.64,
+                minChildSize: 0.2,
+                maxChildSize: 1,
+                builder: (context, scrollController) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: greenDark,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20))),
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Container(
+                          height: MediaQuery.of(context).size.height / 1.9,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15))),
+                          child: Stack(
+                            children: [
+                              Stack(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        25, 40, 25, 0),
+                                    child: Text('معلومات الموظف الشخصية',
+                                        style: TextStyle(
+                                          fontFamily: 'El Messiri',
+                                          fontSize: 25,
+                                          color: Colors.black,
+                                          decoration: TextDecoration.none,
+                                          //
+                                        )),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        30, 100, 30, 0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 1,
+                                          )),
+                                      width: MediaQuery.of(context).size.width /
+                                          1.35,
+                                      height: 50,
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Icon(
+                                            Icons.perm_identity,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text('الإسم: ' + name,
+                                              style: TextStyle(
+                                                fontFamily: 'El Messiri',
+                                                fontSize: 20,
+                                                color: Colors.black,
+                                                decoration: TextDecoration.none,
+                                                //
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        30, 160, 30, 0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 1,
+                                          )),
+                                      width: MediaQuery.of(context).size.width /
+                                          1.35,
+                                      height: 50,
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Icon(
+                                            Icons.phone_android,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text('رقم الهاتف: ' + phone,
+                                              style: TextStyle(
+                                                fontFamily: 'El Messiri',
+                                                fontSize: 20,
+                                                color: Colors.black,
+                                                decoration: TextDecoration.none,
+                                                //
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        30, 220, 30, 0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 1,
+                                          )),
+                                      width: MediaQuery.of(context).size.width /
+                                          1.35,
+                                      height: 50,
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Icon(
+                                            Icons.fact_check,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text('رقم الهوية: ' + Identity,
+                                              style: TextStyle(
+                                                fontFamily: 'El Messiri',
+                                                fontSize: 20,
+                                                color: Colors.black,
+                                                decoration: TextDecoration.none,
+                                                //
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        55, 300, 55, 0),
+                                    child: Row(children: <Widget>[
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                1.7,
+                                        child: FlatButton(
+                                            onPressed: () {
+                                              setState(() {});
+                                              Delete(id);
+                                            },
+                                            textColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15)),
+                                            child: Container(
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      begin:
+                                                          Alignment.centerRight,
+                                                      end: Alignment.centerLeft,
+                                                      colors: [
+                                                        greenLight,
+                                                        greenDark,
+                                                      ],
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                15))),
+                                                child: Center(
+                                                  child: Text(
+                                                    'حذف الموظف',
+                                                    style: TextStyle(
+                                                      fontFamily: 'El Messiri',
+                                                      fontSize: 18,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ))),
+                                      ),
+                                    ]),
+                                  )
+                                ],
+                              ),
+                            ],
+                          )),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+          child: Container(
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: greenDark, width: 2)),
+              child: Center(
+                child: Text(
+                  name,
+                  style: TextStyle(
+                    fontFamily: 'El Messiri',
+                    fontSize: 22,
+                    color: Colors.black,
+                  ),
+                ),
+              )),
+        ));
+  }
+
+  Widget fetchAllOfficers() {
+    return FutureBuilder(
+        future: _fetchData.fetchAllOfficers(),
+        builder: (context, snapchot) {
+          var officers = snapchot.data as List<officerModel>;
+          return snapchot.data == null
+              ? Text("جاري التحميل")
+              : ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: officers == null ? 0 : officers.length,
+                  itemBuilder: (context, index) {
+                    return officerCard(officers[index].name, officers[index].id,
+                        officers[index].Identity, officers[index].phone);
+                  });
+        });
+  }
+
+  Future<void> Delete(id) async {
+    var officerID = baseUrl + "/officers/" + id.toString();
+    var res = await http.delete(
+      Uri.parse(officerID),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    print(res.statusCode);
+    print(res.statusCode);
   }
 }

@@ -51,6 +51,8 @@ android {
         versionName flutterVersionName
 */
         defaultConfig {
+        applicationId "com.example.waste_collector"
+        
         minSdkVersion 21
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
@@ -76,3 +78,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+
+apply plugin: 'com.google.gms.google-services'

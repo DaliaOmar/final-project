@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, camel_case_types, library_prefixes, unused_element, must_be_immutable, unnecessary_new, prefer_const_constructors, import_of_legacy_library_into_null_safe, use_key_in_widget_constructors, avoid_unnecessary_containers, avoid_print, unused_import, prefer_const_declarations, unused_local_variable, deprecated_member_use, prefer_final_fields
+// ignore_for_file: file_names, camel_case_types, library_prefixes, unused_element, must_be_immutable, unnecessary_new, prefer_const_constructors, import_of_legacy_library_into_null_safe, use_key_in_widget_constructors, avoid_unnecessary_containers, avoid_print, unused_import, prefer_const_declarations, unused_local_variable, deprecated_member_use, prefer_final_fields, unnecessary_this
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -8,6 +8,8 @@ import 'package:latlong2/latlong.dart' as latLng;
 import 'package:latlong2/latlong.dart';
 import 'package:waste_collector/constants.dart';
 import 'icons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class addBasket  extends StatefulWidget {
   const addBasket ({Key? key}) : super(key: key);
   @override
@@ -30,6 +32,7 @@ class MyMap extends StatefulWidget {
 }
 
 class _MyMap extends State<MyMap> {
+  bool isChecked = false;  
   List<Marker> allMarkers = [];
   setMarkers() {
     return allMarkers;
@@ -56,14 +59,20 @@ class _MyMap extends State<MyMap> {
                     print(first.featureName);
                   },
                 ),
-              )));
+              )
+              
+   
+              ));
+            
     });
+
   }
 
   Future addMarker() async {
-    
+     
    TextEditingController _latitude = TextEditingController();
    TextEditingController _longitude = TextEditingController();
+   TextEditingController _number = TextEditingController();
     await showDialog(
         context: context,
         barrierDismissible: true,
@@ -108,15 +117,64 @@ class _MyMap extends State<MyMap> {
      ) ) ),
 
      ]),
-     
+       Row(
+     children: [
+        SizedBox(
+            height: 100.0,
+            width: 20,),
+       SizedBox(
+            height: 100.0,
+                width: 100,
+            child:
+           
+       TextField(
+        
+             controller: _number,       
+      decoration: InputDecoration(
+       //  contentPadding: EdgeInsets.fromLTRB(90,0, 0, 0),
+          hintText: 'رقم الحاوية',
+      )  )),
+       SizedBox(
+            height: 100.0,
+            width: 20,),
+      SizedBox(
+            height: 100.0,
+            width: 150,
+            
+            child:Row(
+              children:[
+                Text("حالة الحاوية"),
+Checkbox(  value:isChecked, onChanged: ( value) {  
+                      setState(() {
+                         isChecked = value!;
+                      });
+                           
+  
+  },  
+)],  )
+ ),
+
+     ]),
        FlatButton(
                   textColor: Colors.black,
                  
                   child: Text('اضافة'),
                 onPressed: () {
                   
-                  addToList(double.parse(_latitude.text.toString()),double.parse(_longitude.text.toString()) );
-                  Navigator.of(context).pop();
+                  addToList(double.parse(_latitude.text.toString()),double.parse(_longitude.text.toString()) ).then( 
+                  FirebaseFirestore.instance.collection("Baskets").add(
+               {
+                 "latitude" : double.parse(_latitude.text.toString()),
+                 "longitude":double.parse(_longitude.text.toString()),
+                  "number":int.parse(_number.text.toString()),
+               })
+           
+               ).then( Navigator.of(context).pop());
+                  
+
+          
+                
+
                 },
        ),
      

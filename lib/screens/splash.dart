@@ -1,13 +1,34 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:waste_collector/constants.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:waste_collector/screens/login.dart';
 
-import 'welcome.dart';
-
-class splash extends StatelessWidget {
+class splash extends StatefulWidget {
   const splash({Key? key}) : super(key: key);
+
+  @override
+  State<splash> createState() => _splashState();
+}
+
+class _splashState extends State<splash> {
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  startTimer() async {
+    var duration = Duration(seconds: 6);
+    return Timer(duration, route);
+  }
+
+  route() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => login()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +119,10 @@ class splash extends StatelessWidget {
             alignment: Alignment.bottomLeft,
             child: FlatButton(
                 onPressed: () {
-                    Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => welcome()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => login()),
+                  );
                 },
                 child: Text(
                   'تخطي',

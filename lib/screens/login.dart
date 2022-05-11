@@ -1,20 +1,42 @@
-// ignore_for_file: camel_case_types, prefer_const_constructors, deprecated_member_use, prefer_const_literals_to_create_immutables, must_be_immutable, unused_element
+// ignore_for_file: unused_import, camel_case_types, prefer_const_constructors, deprecated_member_use, prefer_const_literals_to_create_immutables, unused_local_variable, avoid_print, curly_braces_in_flow_control_structures
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:waste_collector/constants.dart';
+import 'package:http/http.dart' as http;
+import 'package:waste_collector/screens/adminNav.dart';
+import 'package:waste_collector/screens/customer.dart';
+import 'package:waste_collector/screens/customerNav.dart';
+import 'package:waste_collector/screens/officerNav.dart';
+import 'package:waste_collector/screens/sharedPrefs.dart';
 import 'package:waste_collector/screens/signup.dart';
-
-import 'customerNav.dart';
 
 class login extends StatefulWidget {
   const login({Key? key}) : super(key: key);
 
   @override
-  State<login> createState() => _LoginState();
+  State<login> createState() => _loginState();
 }
 
-class _LoginState extends State<login> {
-  late bool _isObscure = true;
+class _loginState extends State<login> {
+  late TextEditingController nameController;
+  late TextEditingController identityController;
+  late TextEditingController phoneController;
+  late TextEditingController passController;
+  late TextEditingController repassController;
+  bool pass = true;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    identityController = TextEditingController();
+    phoneController = TextEditingController();
+    passController = TextEditingController();
+    repassController = TextEditingController();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,6 +111,7 @@ class _LoginState extends State<login> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 1.2,
                     child: TextField(
+                        controller: identityController,
                         cursorColor: Colors.black,
                         textAlign: TextAlign.right,
                         decoration: ThemeHelper().textInputDecoration(
@@ -106,24 +129,20 @@ class _LoginState extends State<login> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 1.2,
                     child: TextField(
+                        controller: passController,
                         cursorColor: Colors.black,
-                        obscureText: true,
+                        obscureText: pass,
                         textAlign: TextAlign.right,
                         decoration: InputDecoration(
                             labelText: 'كلمة المرور',
                             hintText: 'أدخل كلمة المرور الخاصة بك ..',
-                            suffixIcon: IconButton(
+                            suffixIcon: InkWell(
+                              onTap: _togglePass,
+                              child: Icon(
+                                Icons.remove_red_eye,
                                 color: Colors.black,
-                                icon: Icon(
-                                  _isObscure
-                                      ? Icons.visibility_off
-                                      : Icons.remove_red_eye,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isObscure = !_isObscure;
-                                  });
-                                }),
+                              ),
+                            ),
                             prefixIcon: Icon(
                               Icons.lock,
                               color: Colors.black,
@@ -178,8 +197,7 @@ class _LoginState extends State<login> {
                     width: MediaQuery.of(context).size.width / 1.5,
                     child: FlatButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => customerNav()));
+                          loginFunc();
                         },
                         textColor: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -217,8 +235,10 @@ class _LoginState extends State<login> {
                     width: MediaQuery.of(context).size.width / 1.4,
                     child: FlatButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => Signup()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => signup()),
+                          );
                         },
                         child: Text(
                           'لا تمتلك حساب ؟ إنشاء حساب جديد',
@@ -233,11 +253,74 @@ class _LoginState extends State<login> {
           ],
         ));
   }
-}
 
-@override
-Widget build(BuildContext context) {
-  // ignore: todo
-  // TODO: implement build
-  throw UnimplementedError();
+  void _togglePass() {
+    setState(() {
+      pass = !pass;
+    });
+  }
+
+  Future<void> loginFunc() async {
+    int flag = 0;
+    if (identityController.text.isEmpty || passController.text.isEmpty) {
+      print("empty fields");
+      return;
+    }
+    var body = jsonEncode({
+      "Identity": identityController.text,
+      "password": passController.text,
+    });
+    var res = await http.post(Uri.parse(baseUrl + "/users/login"),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+
+    var res2 = await http.post(Uri.parse(baseUrl + "/officers/login"),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+
+    var res3 = await http.post(Uri.parse(baseUrl + "/admins/login"),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+
+    if (res.statusCode == 200) {
+      var body = jsonDecode(res.body);
+      sharedPrefs.saveToken(body['token']);
+      print("done");
+      clear();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => customerNav()),
+      );
+    } else if (res2.statusCode == 200) {
+      var body = jsonDecode(res2.body);
+      sharedPrefs.saveToken(body['token']);
+      print("done");
+      clear();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => officerNav()),
+      );
+    } else if (res3.statusCode == 200) {
+      var body = jsonDecode(res3.body);
+      sharedPrefs.saveToken(body['token']);
+      print("done");
+      clear();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => adminNav()),
+      );
+    } else
+      print("failed");
+  }
+
+  void clear() {
+    identityController.text = "";
+    passController.text = "";
+  }
 }

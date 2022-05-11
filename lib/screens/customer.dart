@@ -1,11 +1,20 @@
-// ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: camel_case_types, prefer_final_fields, prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
 import 'package:waste_collector/constants.dart';
+import 'package:waste_collector/models/fetchData.dart';
 
-class customer extends StatelessWidget {
+import '../models/userModel.dart';
+
+class customer extends StatefulWidget {
   const customer({Key? key}) : super(key: key);
 
+  @override
+  State<customer> createState() => _customerState();
+}
+
+class _customerState extends State<customer> {
+  fetchData _fetchData = fetchData();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,6 +22,7 @@ class customer extends StatelessWidget {
       body: SingleChildScrollView(
           child: Stack(
         children: [
+          myData(),
           Padding(
               padding: EdgeInsets.fromLTRB(15, 50, 15, 0),
               child: Container(
@@ -24,18 +34,35 @@ class customer extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15)),
               )),
           Padding(
-            padding: EdgeInsets.fromLTRB(15, 270, 15, 0),
-            child: Text('أهلاً وسهلاً بك ..',
+            padding: const EdgeInsets.fromLTRB(0, 270, 10, 0),
+            child: Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(40),
+                  border: Border.all(
+                    color: box,
+                    width: 6,
+                  ),
+                  image: DecorationImage(
+                    image: AssetImage('assets/photos/avatar.png'),
+                    fit: BoxFit.cover,
+                  )),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(15, 320, 90, 0),
+            child: Text('تمتع بخدماتنا',
                 style: TextStyle(
                   fontFamily: 'El Messiri',
-                  fontSize: 30,
+                  fontSize: 18,
                   color: Colors.black,
                   decoration: TextDecoration.none,
                   //
                 )),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(15, 350, 15, 0),
+            padding: EdgeInsets.fromLTRB(15, 370, 15, 0),
             child: Text('من نحن ؟',
                 style: TextStyle(
                   fontFamily: 'El Messiri',
@@ -46,7 +73,7 @@ class customer extends StatelessWidget {
                 )),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(15, 380, 15, 0),
+            padding: EdgeInsets.fromLTRB(15, 410, 15, 0),
             child: SizedBox(
               width: 500,
               child: Text(
@@ -99,7 +126,7 @@ class customer extends StatelessWidget {
             child: SizedBox(
               width: 500,
               child: Text(
-                "للمواطن - يستطيع المواطن تتبع مسار شاحنات المهملات مما يمكنه من تحديد الوقت الذي تمر به الشاحنة من المنطقة المتواجد فيها والتخلص من المهملات في هذا الوقت وهذا يوفر من عدد عمليات الجمع التي تقوم بها البلدية للمنطقة الواحدة مما يقلل التكاليف المترتبة عليها.",
+                "للمواطن - يستطيع المواطن تتبع مسار شاحنات المهملات مما يمكنه من تحديد الوقت الذي تمر به الشاحنة من المنطقة المتواجد فيها والتخلص من المهملات في هذا الوقت وهذا يوفر من عدد عمليات اجمع التي تقوم بها البلدية للمنطقة الواحدة مما يقلل التكاليف المترتبة عليها.",
                 maxLines: 7,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
@@ -285,5 +312,32 @@ class customer extends StatelessWidget {
         ],
       )),
     );
+  }
+
+  Widget myData() {
+    return FutureBuilder(
+        future: _fetchData.fetchMyAccount(),
+        builder: (context, snapchot) {
+          var data = snapchot.data as userModel;
+          // data == null ? name = "" : name = data.name;
+          // data == null ? phone = "" : phone = data.phone;
+          // data == null ? password = "" : password = data.password;
+          // data == null ? id = "" : id = data.id;
+          return data == null
+              ? Text("جاري التحميل")
+              : Padding(
+                  padding: EdgeInsets.fromLTRB(20, 280, 90, 0),
+                  child: Text("أهلا وسهلا بك " + data.name + " ..",
+                      maxLines: 2,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                        fontFamily: 'El Messiri',
+                        fontSize: 20,
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                        //
+                      )),
+                );
+        });
   }
 }

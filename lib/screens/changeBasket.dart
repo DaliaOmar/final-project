@@ -1,8 +1,10 @@
-// ignore_for_file: file_names, camel_case_types, prefer_const_constructors, deprecated_member_use, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, camel_case_types, unused_import, unused_import, deprecated_member_use, prefer_const_literals_to_create_immutables, file_names, duplicate_ignore
 
 import 'package:flutter/material.dart';
 import 'package:waste_collector/constants.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:waste_collector/screens/admin.dart';
+import 'package:waste_collector/screens/adminNav.dart';
 
 class change extends StatelessWidget {
   const change({Key? key}) : super(key: key);
@@ -22,7 +24,7 @@ class change extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 1.4,
               )),
           Positioned(
-            top: 50,
+            top: 60,
             right: 40,
             child: Text(
               'تعديل سعة حاوية',
@@ -32,6 +34,31 @@ class change extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 25, 320, 0),
+            child: FlatButton(
+                height: 40,
+                minWidth: 40,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => adminNav()),
+                  );
+                },
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    color: greenDark,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Icon(
+                    Icons.home_filled,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                )),
           ),
           Padding(
               padding: EdgeInsets.only(top: 250),
