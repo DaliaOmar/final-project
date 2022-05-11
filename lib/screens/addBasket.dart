@@ -1,5 +1,7 @@
-// ignore_for_file: file_names, camel_case_types, library_prefixes, unused_element, must_be_immutable, unnecessary_new, prefer_const_constructors, import_of_legacy_library_into_null_safe, use_key_in_widget_constructors, avoid_unnecessary_containers, avoid_print, unused_import, prefer_const_declarations, unused_local_variable, deprecated_member_use, prefer_final_fields, unnecessary_this
+// ignore_for_file: file_names, camel_case_types, library_prefixes, unused_element, must_be_immutable, unnecessary_new, prefer_const_constructors, import_of_legacy_library_into_null_safe, use_key_in_widget_constructors, avoid_unnecessary_containers, avoid_print, unused_import, prefer_const_declarations, unused_local_variable, deprecated_member_use, prefer_final_fields, unnecessary_this, curly_braces_in_flow_control_structures
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoder/geocoder.dart';
@@ -10,13 +12,13 @@ import 'package:waste_collector/constants.dart';
 import 'icons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class addBasket  extends StatefulWidget {
-  const addBasket ({Key? key}) : super(key: key);
+class addBasket extends StatefulWidget {
+  const addBasket({Key? key}) : super(key: key);
   @override
-  _addBasket  createState() => _addBasket ();
+  _addBasket createState() => _addBasket();
 }
 
-class _addBasket extends State<addBasket > {
+class _addBasket extends State<addBasket> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,13 +34,17 @@ class MyMap extends StatefulWidget {
 }
 
 class _MyMap extends State<MyMap> {
-  bool isChecked = false;  
+  bool isChecked = false;
+  TextEditingController _latitude = TextEditingController();
+    TextEditingController _longitude = TextEditingController();
+    TextEditingController _number = TextEditingController();
+    TextEditingController _capacity = TextEditingController();
   List<Marker> allMarkers = [];
   setMarkers() {
     return allMarkers;
   }
 
-  addToList( double latitude, double longitude) async {
+  addToList(double latitude, double longitude) async {
     final query = "1600 Amphiteatre Parkway, Mountain View";
     var addresses = await Geocoder.local.findAddressesFromQuery(query);
     var first = addresses.first;
@@ -49,30 +55,22 @@ class _MyMap extends State<MyMap> {
           point: new LatLng(latitude, longitude),
           builder: (context) => new Container(
                 child: IconButton(
-                  icon:   Icon(
-                            MyFlutterApp.trash_alt,
-                            size: 30.0,
-                          ),
+                  icon: Icon(
+                    MyFlutterApp.trash_alt,
+                    size: 30.0,
+                  ),
                   color: Colors.green,
                   iconSize: 45.0,
                   onPressed: () {
                     print(first.featureName);
                   },
                 ),
-              )
-              
-   
-              ));
-            
+              )));
     });
-
   }
 
   Future addMarker() async {
-     
-   TextEditingController _latitude = TextEditingController();
-   TextEditingController _longitude = TextEditingController();
-   TextEditingController _number = TextEditingController();
+    
     await showDialog(
         context: context,
         barrierDismissible: true,
@@ -82,113 +80,95 @@ class _MyMap extends State<MyMap> {
               'اضافة حاوية',
               style: new TextStyle(fontSize: 17.0),
             ),
-             actions: <Widget> [ 
-            
-              Row(
-     children: [
-        SizedBox(
-            height: 100.0,
-            width: 20,),
-       SizedBox(
-            height: 100.0,
-                width: 100,
-            child:
-           
-       TextField(
-        
-             controller: _latitude,       
-      decoration: InputDecoration(
-       //  contentPadding: EdgeInsets.fromLTRB(90,0, 0, 0),
-          hintText: 'الإحداثي السيني',
-      )  )),
-       SizedBox(
-            height: 100.0,
-            width: 50,),
-      SizedBox(
-            height: 100.0,
-            width: 100,
-            child:
- TextField(
-              controller: _longitude,           
-      decoration: InputDecoration(
-     
-         // contentPadding: EdgeInsets.fromLTRB(10, 0, 70, 0),
-          hintText: 'الإحداثي الصادي',
-     ) ) ),
-
-     ]),
-       Row(
-     children: [
-        SizedBox(
-            height: 100.0,
-            width: 20,),
-       SizedBox(
-            height: 100.0,
-                width: 100,
-            child:
-           
-       TextField(
-        
-             controller: _number,       
-      decoration: InputDecoration(
-       //  contentPadding: EdgeInsets.fromLTRB(90,0, 0, 0),
-          hintText: 'رقم الحاوية',
-      )  )),
-       SizedBox(
-            height: 100.0,
-            width: 20,),
-      SizedBox(
-            height: 100.0,
-            width: 150,
-            
-            child:Row(
+            actions: <Widget>[
+              Row(children: [
+                SizedBox(
+                  height: 100.0,
+                  width: 20,
+                ),
+                SizedBox(
+                    height: 100.0,
+                    width: 100,
+                    child: TextField(
+                        controller: _latitude,
+                        decoration: InputDecoration(
+                          //  contentPadding: EdgeInsets.fromLTRB(90,0, 0, 0),
+                          hintText: 'الإحداثي السيني',
+                        ))),
+                SizedBox(
+                  height: 100.0,
+                  width: 50,
+                ),
+                SizedBox(
+                    height: 100.0,
+                    width: 100,
+                    child: TextField(
+                        controller: _longitude,
+                        decoration: InputDecoration(
+                          // contentPadding: EdgeInsets.fromLTRB(10, 0, 70, 0),
+                          hintText: 'الإحداثي الصادي',
+                        ))),
+              ]),
+              Row(children: [
+                SizedBox(
+                  height: 100.0,
+                  width: 20,
+                ),
+                SizedBox(
+                    height: 100.0,
+                    width: 100,
+                    child: TextField(
+                        controller: _number,
+                        decoration: InputDecoration(
+                          //  contentPadding: EdgeInsets.fromLTRB(90,0, 0, 0),
+                          hintText: 'رقم الحاوية',
+                        ))),
+                SizedBox(
+                  height: 100.0,
+                  width: 20,
+                ),
+                SizedBox(
+                    height: 100.0,
+                    width: 100,
+                    child: TextField(
+                        controller: _capacity,
+                        decoration: InputDecoration(
+                          //  contentPadding: EdgeInsets.fromLTRB(90,0, 0, 0),
+                          hintText: 'سعة الحاوية',
+                        ))
+                    /*Row(
               children:[
                 Text("حالة الحاوية"),
 Checkbox(  value:isChecked, onChanged: ( value) {  
                       setState(() {
                          isChecked = value!;
-                      });
-                           
-  
-  },  
-)],  )
- ),
-
-     ]),
-       FlatButton(
-                  textColor: Colors.black,
-                 
-                  child: Text('اضافة'),
+                      });},)],  )*/
+                    ),
+              ]),
+              FlatButton(
+                textColor: Colors.black,
+                child: Text('اضافة'),
                 onPressed: () {
-                  
-                  addToList(double.parse(_latitude.text.toString()),double.parse(_longitude.text.toString()) ).then( 
-                  FirebaseFirestore.instance.collection("Baskets").add(
-               {
-                 "latitude" : double.parse(_latitude.text.toString()),
-                 "longitude":double.parse(_longitude.text.toString()),
-                  "number":int.parse(_number.text.toString()),
-               })
-           
-               ).then( Navigator.of(context).pop());
-                  
-
-          
-                
-
+                  addToList(double.parse(_latitude.text.toString()),
+                          double.parse(_longitude.text.toString()))
+                      .then(
+                          FirebaseFirestore.instance.collection("Baskets").add({
+                        "latitude": double.parse(_latitude.text.toString()),
+                        "longitude": double.parse(_longitude.text.toString()),
+                        "number": int.parse(_number.text.toString()),
+                        "capacity": _capacity.text.toString()
+                      }))
+                      .then(Navigator.of(context).pop());
                 },
-       ),
-     
-     ],
-     
-     
-           
+              ),
+            ],
           );
         });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    
     return new Scaffold(
       appBar: new AppBar(
           backgroundColor: const Color.fromARGB(255, 21, 109, 24),
@@ -199,28 +179,64 @@ Checkbox(  value:isChecked, onChanged: ( value) {
               addMarker();
             },
           )),
-             
       body: FlutterMap(
-      
         options: new MapOptions(
           //onTap: (tapPosition, point) => getMyLocation(),
           center: new LatLng(32.219353, 35.243198),
           minZoom: 10.0,
           zoom: 14,
         ),
-        
- 
         layers: [
           new TileLayerOptions(
               urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
               subdomains: ['a', 'b', 'c']),
           new MarkerLayerOptions(
-            markers: setMarkers(),
+         //   markers: setMarkers(),
+         markers: allMarkers,
           )
         ],
-        
       ),
-   
     );
   }
+
+ Future<void> addBasket() async {
+    if (_latitude.text.isEmpty ||
+        _longitude.text.isEmpty ||
+        _number.text.isEmpty ||
+        _capacity.text.isEmpty ) {
+      print("empty fields");
+      return;
+    }
+  
+    var body = jsonEncode({
+      "latitude": _latitude.text,
+      "longitude": _longitude.text,
+      "number": _number.text,
+      "capacity": _capacity.text,
+    });
+    var res = await http.post(Uri.parse(baseUrl + "/Baskets"),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+    if (res.statusCode == 201) {
+      print("done");
+      clear();
+   //   Navigator.push(context,MaterialPageRoute(builder: (context) => addBasket()),
+     // );
+    } else
+      print("failed");
+  }
+
+  void clear() {
+    _latitude.text = "";
+    _longitude.text = "";
+    _number.text = "";
+    _capacity.text = "";
+  
+  }
+
+
+
+
 }

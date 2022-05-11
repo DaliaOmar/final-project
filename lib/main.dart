@@ -42,9 +42,10 @@ class MyApp extends StatelessWidget {
       locale: Locale("ar", "AE"),
       title: 'Welcome',
       //home: adminNav(),
-      home: splash(),
+     // home: splash(),
       // home:locationMap(),
         //home:map(),
+        home: customerNav(),
     );
   }
 }
